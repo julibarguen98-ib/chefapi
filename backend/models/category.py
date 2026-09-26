@@ -1,5 +1,6 @@
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy.orm import relationship
 from backend.database.connection import Base
 
 class Category(Base):
@@ -10,3 +11,4 @@ class Category(Base):
     description = Column(String(255), nullable=True)
     icon = Column(String(50), default="restaurant")
     created_at = Column(DateTime, default=datetime.utcnow)
+    recipes = relationship("Recipe", back_populates="category", cascade="all, delete-orphan")
