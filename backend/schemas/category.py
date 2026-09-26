@@ -18,3 +18,9 @@ class CategoryResponse(CategoryBase):
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class CategoryUpdate(BaseModel):
+    name: Optional[str] = Field(None, min_length=2, max_length=80)
+    description: Optional[str] = Field(None, max_length=255)
+    icon: Optional[str] = None
