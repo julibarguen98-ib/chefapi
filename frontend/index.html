@@ -6,14 +6,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ChefAPI Engine - Dashboard</title>
 
+  <!-- Fuentes e Iconos -->
   <link rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+  <!-- CSS Principal -->
   <link rel="stylesheet" href="src/css/styles.css">
 </head>
 
 <body>
 
-
+  <!-- BARRA SUPERIOR DE ESTADO -->
   <div class="top-bar">
     <div class="status-indicator">
       <span class="status-dot"></span>
@@ -25,37 +28,37 @@
     </div>
   </div>
 
-
+  <!-- ENCABEZADO Y NAVEGACIÓN PRINCIPAL -->
   <header class="main-header">
     <div class="logo-container">
-      <img src="img/logochefapi.png" alt="ChefAPI Logo" class="logo-img" id="app-logo">
+      <img src="src/img/logochefapi.png" alt="ChefAPI Logo" class="logo-img" id="app-logo">
       <div class="logo-text">
         <span class="brand-title">ChefAPI</span>
         <span class="brand-sub">ENGINE V1.2</span>
       </div>
     </div>
 
+    <!-- Pestañas de Navegación -->
     <nav class="nav-tabs">
-      <button class="nav-tab">1. Documentación & Endpoints</button>
-      <button class="nav-tab active">2. Live Playground & Demo CRUD</button>
-      <button class="nav-tab">3. Modelo de Datos & DER</button>
-      <button class="nav-tab">4. Guía FastAPI & Arquitectura</button>
+      <button class="nav-tab active" data-tab="tab-documentation">1. Documentación & Endpoints</button>
+      <button class="nav-tab" data-tab="tab-playground">2. Live Playground & Demo CRUD</button>
     </nav>
 
     <div class="header-actions">
-      <span class="version-badge"><span class="material-symbols-outlined">description</span> v3.1.0-OAS</span>
       <a href="https://github.com/julibarguen98-ib/chefapi.git" target="_blank" class="github-btn">
-        <span class="material-symbols-outlined">code</span> GitHub Repo
+        <span class="material-symbols-outlined">code</span> GitHub
       </a>
     </div>
   </header>
 
-
+  <!-- BARRA DE SERVIDOR Y ACCIONES RÁPIDAS -->
   <section class="target-bar">
     <div class="target-info">
       <span class="target-label">TARGET:</span>
-      <select class="target-select">
-        <option>Local (http://127.0.0.1:8000/v1)</option>
+      <select class="target-select" id="target-select">
+        <option value="http://127.0.0.1:8000/api/v1">Local (http://127.0.0.1:8000/api/v1)</option>
+        <option value="https://api-staging.chefapi.com/api/v1">Staging / Demo Cloud</option>
+        <option value="http://localhost:3000">json-server (Mock Local)</option>
       </select>
       <span class="uvicorn-status"><span class="status-dot green"></span> UVICORN ACTIVE | 18.4ms</span>
     </div>
@@ -65,114 +68,448 @@
     </div>
   </section>
 
-
+  <!-- CONTENEDOR DE PESTAÑAS (TAB CONTENTS) -->
   <main class="dashboard-container">
 
-    <div class="filter-bar">
-      <div class="search-box">
-        <span class="material-symbols-outlined">search</span>
-        <input type="text" id="search-input"
-          placeholder="Búsqueda reactiva por receta, técnica culinaria o ingredientes...">
-      </div>
-      <select id="category-filter" class="filter-select">
-        <option value="ALL">Todas las Categorías</option>
-      </select>
-      <select id="sort-filter" class="filter-select">
-        <option value="asc">Ordenar: ID Ascendente</option>
-        <option value="desc">Ordenar: ID Descendente</option>
-      </select>
-    </div>
+    <!-- PESTAÑA 1: DOCUMENTACIÓN & ENDPOINTS -->
+    <section id="tab-documentation" class="tab-content active">
+      <header class="doc-header">
+        <h1>ChefAPI REST Engine — Documentación & Especificación OpenAPI</h1>
+        <p>Backend robusto desarrollado en FastAPI con SQLAlchemy ORM, persistencia relacional estricta y validaciones
+          síncronas mediante esquemas Pydantic v2.</p>
 
-
-    <div class="metrics-grid">
-      <div class="metric-card">
-        <span class="metric-icon material-symbols-outlined">menu_book</span>
-        <div>
-          <span class="metric-title">RECETAS EN MEMORIA</span>
-          <h3 class="metric-value" id="metric-recipes-count">0</h3>
+        <div class="doc-actions-bar">
+          <a href="http://127.0.0.1:8000/openapi.json" target="_blank" class="btn btn-secondary">
+            <span class="material-symbols-outlined">download</span> Descargar openapi.json
+          </a>
+          <button id="btn-copy-curl-doc" class="btn btn-secondary">
+            <span class="material-symbols-outlined">content_copy</span> Copiar cURL Base
+          </button>
+          <button id="btn-go-playground" class="btn btn-primary" onclick="switchToPlayground()">
+            <span class="material-symbols-outlined">play_arrow</span> Probar en Playground
+          </button>
         </div>
-      </div>
-      <div class="metric-card">
-        <span class="metric-icon material-symbols-outlined">category</span>
-        <div>
-          <span class="metric-title">CATEGORÍAS VÁLIDAS</span>
-          <h3 class="metric-value" id="metric-categories-count">0</h3>
-        </div>
-      </div>
-      <div class="metric-card">
-        <span class="metric-icon material-symbols-outlined">timer</span>
-        <div>
-          <span class="metric-title">TIEMPO PROMEDIO</span>
-          <h3 class="metric-value" id="metric-avg-time">0 min</h3>
-        </div>
-      </div>
-      <div class="metric-card">
-        <span class="metric-icon material-symbols-outlined">verified</span>
-        <div>
-          <span class="metric-title">PYDANTIC SCHEMAS</span>
-          <h3 class="metric-value text-green">OK (100%)</h3>
-        </div>
-      </div>
-    </div>
-
-
-    <div class="playground-layout">
-
-      <section class="table-panel">
-        <div class="panel-header">
-          <h2>Repositorio de Recetas <small id="records-found">0 registros coincidentes</small></h2>
-        </div>
-
-        <div class="table-wrapper">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>RECETA & TÉCNICA</th>
-                <th>CATEGORÍA</th>
-                <th>COCCIÓN</th>
-                <th>DIFICULTAD</th>
-                <th>ACCIONES</th>
-              </tr>
-            </thead>
-            <tbody id="recipes-table-body">
-
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-
-      <section class="console-panel">
-        <div class="console-header">
-          <div class="console-dots">
-            <span class="dot red"></span>
-            <span class="dot yellow"></span>
-            <span class="dot green"></span>
-            <span class="console-title">FASTAPI ASYNC TELEMETRY CONSOLE</span>
+      </header>
+      <article class="banner">
+        <img
+          src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1B1QO5F3ek-trCiHJqlz-9SgR6Xxhh50iofYWpGE4NRR6T3JgGL92eyWX3pk9FVlJA2_i3SaphmXLiL7OpDxIEYlEM8Gnac7cHBRsk9e96CM7oMpeCR-XMerx8XsptkosictbyM-czq8hLHeDCxF3GtooCegedSOyhRKhG1vkcd9tPRlgKAkKkc5Zq23O_UsxY5pwl1zxZZJ1MHPXspfemeYbI_i-fL1SS6DOgj1XaEq-9WcVKyN4"
+          alt="Culinary Station">
+        <div class="banner-overlay"></div>
+        <div class="banner-content">
+          <div>
+            <span class="banner-label">
+              Data Domain Architecture
+            </span>
+            <h3>
+              Relational Schemas:
+              Categories & Recipes
+            </h3>
           </div>
-          <div class="console-actions">
-            <button class="btn-console-action">Copy cURL</button>
-            <button class="btn-console-action" id="clear-console">Clear</button>
-          </div>
+          <span class="banner-chip">
+            1 : N Cardinality
+          </span>
         </div>
-        <div class="console-status-bar">
-          <span class="method-badge get">GET /api/v1/recipes</span>
-          <span class="status-code code-200">200 OK</span>
-          <span class="latency">24.0 ms</span>
-        </div>
-        <pre class="console-body" id="console-output">
-{
+      </article>
+      <section class="api-section">
+        <div class="container two-columns">
+          <div class="doc-grid">
+
+            <div class="left-column">
+              <!-- Lista de Endpoints Categorías y Recetas -->
+              <div class="endpoints-list">
+                <h3>Categorías <code>/api/v1/categories</code></h3>
+                <div class="endpoint-card" onclick="testEndpoint('GET', '/api/v1/categories')">
+                  <span class="badge badge-get">GET</span> <code>/api/v1/categories</code> — Retorna la colección
+                  completa de categorías
+                </div>
+                <div class="endpoint-card" onclick="testEndpoint('POST', '/api/v1/categories')">
+                  <span class="badge badge-post">POST</span> <code>/api/v1/categories</code> — Crea una nueva categoría
+                </div>
+                <div class="endpoint-card" onclick="testEndpoint('GET', '/api/v1/categories/{id}')">
+                  <span class="badge badge-get">GET</span> <code>/api/v1/categories/{id}</code> — Obtiene detalle
+                  especifico de categoría con receta vinculada
+                </div>
+                <div class="endpoint-card" onclick="testEndpoint('PUT', '/api/v1/categories/{id}')">
+                  <span class="badge badge-put">PUT</span> <code>/api/v1/categories/{id}</code> — Actualización de
+                  categoría con receta vinculada
+                </div>
+                <div class="endpoint-card" onclick="testEndpoint('DELETE', '/api/v1/categories/{id}')">
+                  <span class="badge badge-delete">DELETE</span> <code>/api/v1/categories/{id}</code> — Eliminación de
+                  categoría con receta vinculada
+                </div>
+
+                <h3>Recetas <code>/api/v1/recipes</code></h3>
+                <div class="endpoint-card" onclick="testEndpoint('GET', '/api/v1/recipes')">
+                  <span class="badge badge-get">GET</span> <code>/api/v1/recipes</code> — Retorna colección
+                  de recetas
+                </div>
+                <div class="endpoint-card" onclick="testEndpoint('POST', '/api/v1/recipes')">
+                  <span class="badge badge-post">POST</span> <code>/api/v1/recipes</code> — Crea un registro de
+                  Receta
+                </div>
+                <div class="endpoint-card" onclick="testEndpoint('GET', '/api/v1/recipes/{id}')">
+                  <span class="badge badge-get">GET</span> <code>/api/v1/recipes/{id}</code> — Obetiene recetas con
+                  categoria
+                </div>
+                <div class="endpoint-card" onclick="testEndpoint('PUT', '/api/v1/recipes/{id}')">
+                  <span class="badge badge-put">PUT</span> <code>/api/v1/recipes/{id}</code> — Actualización integral de
+                  recetas
+                </div>
+                <div class="endpoint-card" onclick="testEndpoint('DELETE', '/api/v1/recipes/{id}')">
+                  <span class="badge badge-delete">DELETE</span> <code>/api/v1/recipes/{id}</code> — Elimina un registro
+                  por ID
+                </div>
+              </div>
+              <!-- MONITOR DE RENDIMIENTO  -->
+              <section class="performance-card">
+                <div class="performance-header">
+                  <span class="performance-title">
+                    FastAPI Performance Monitor (p99 Latency vs Payload Size)
+                  </span>
+                  <strong>Mean: 13.8ms</strong>
+                </div>
+                <svg class="performance-chart" viewBox="0 0 600 64" preserveAspectRatio="none">
+                  <path d="M0,50 Q40,48 80,42 T160,35 T240,40 T320,25 T400,28 T480,18 T560,15 L600,12"
+                    class="chart-line" />
+                  <path d="M0,50 Q40,48 80,42 T160,35 T240,40 T320,25 T400,28 T480,18 T560,15 L600,12 L600,64 L0,64 Z"
+                    class="chart-area" />
+                  <circle cx="320" cy="25" r="4" class="chart-point" />
+                  <circle cx="560" cy="15" r="4" class="chart-point" />
+                </svg>
+                <div class="performance-footer">
+                  <span>Query Execution: 1.2ms</span>
+                  <span>Serialization: 2.1ms</span>
+                  <span>Uvicorn Transport: 10.5ms</span>
+                </div>
+              </section>
+            </div>
+
+            <!-- Interactive Client Playground -->
+            <aside class="right-column">
+              <section class="interactive-console-card">
+                <div class="console-header">
+                  <span>INTERACTIVE CLIENT PLAYGROUND</span>
+                  <button id="btn-send-doc-request" class="btn btn-sm btn-primary">Send Request</button>
+                </div>
+                <div class="console-endpoint-info">
+                  <span id="doc-req-method" class="badge badge-post">POST</span>
+                  <span id="doc-req-url">/api/v1/recipes</span>
+                </div>
+                <pre id="doc-req-payload" contenteditable="true"><code>{
+    "title": "Risotto de Setas",
+    "description": "Risotto preparado con setas.",
+    "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRAyDFM5AqoYI6fOGmB0oxR_07TqF3J4xgsgbnPUK1tJw&s=10",
+    "prep_time_minutes": 25,
+    "price": 12.50,
+    "category_id": 2
+}</code></pre>
+                <hr>
+                <div class="console-response-info">
+                  <span id="doc-res-status" class="status-green">201 Created</span>
+                </div>
+                <pre id="doc-res-body"><code>{
   "status": "success",
-  "message": "Esperando peticiones..."
-}
-                </pre>
+  "data": { "id": 42, "title": "Risotto ai Funghi Porcini" }
+}</code></pre>
+              </section>
+            </aside>
+          </div>
+        </div>
       </section>
-    </div>
+
+      <!--CÓDIGOS HTTP -->
+
+      <section class="http-section">
+        <div class="container">
+          <div class="section-title">
+            <span class="section-label">
+              Protocol Standard & RFC Compliance
+            </span>
+            <h2>Guía de Códigos HTTP Semánticos</h2>
+            <p>
+              ChefAPI implementa respuestas HTTP.
+              Cada error contiene un sobre de información estandarizado.
+            </p>
+          </div>
+          <div class="http-grid">
+
+            <!-- 200 -->
+            <article class="http-card">
+              <div class="http-top">
+                <span class="status success">200 OK</span>
+                <small>RFC 9110</small>
+              </div>
+              <h3>Petición Exitosa</h3>
+              <p>
+                Se completó la lectura (GET) o una actualización idempotente (PUT),
+                devolviendo el recurso solicitado en formato JSON.
+              </p>
+            </article>
+
+            <!-- 201 -->
+            <article class="http-card">
+              <div class="http-top">
+                <span class="status info">201 Created</span>
+                <small>RFC 9110</small>
+              </div>
+              <h3>Recurso Materializado</h3>
+              <p>
+                Una receta o categoría fue creada correctamente y el servidor devuelve
+                el URI del recurso generado mediante la cabecera
+                <code>Location</code>.
+              </p>
+            </article>
+
+            <!-- 400 -->
+            <article class="http-card">
+              <div class="http-top">
+                <span class="status warning">400 Bad Request</span>
+                <small>RFC 9110</small>
+              </div>
+              <h3>Petición Deforme</h3>
+              <p>
+                El payload contiene errores de sintaxis, parámetros incompatibles
+                o un encabezado
+                <code>Content-Type</code> incorrecto.
+              </p>
+            </article>
+
+            <!-- 404 -->
+            <article class="http-card">
+              <div class="http-top">
+                <span class="status neutral">404 Not Found</span>
+                <small>RFC 9110</small>
+              </div>
+              <h3>Recurso Inexistente</h3>
+              <p>
+                El identificador solicitado no existe dentro de las tablas maestras
+                de PostgreSQL o SQLite.
+              </p>
+            </article>
+
+            <!-- 409 -->
+            <article class="http-card">
+              <div class="http-top">
+                <span class="status conflict">409 Conflict</span>
+                <small>Integridad Relacional</small>
+              </div>
+              <h3>Colisión de Clave Foránea</h3>
+              <p>
+                Ocurre cuando se intenta eliminar una categoría con recetas asociadas
+                o se duplica un slug declarado como único.
+              </p>
+            </article>
+
+            <!-- 422 -->
+            <article class="http-card">
+              <div class="http-top">
+                <span class="status danger">422 Unprocessable</span>
+                <small>Pydantic Core</small>
+              </div>
+              <h3>Fallo de Validación</h3>
+              <p>
+                El JSON es válido, pero incumple las reglas del modelo: valores
+                negativos, cadenas vacías o enums inválidos.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+    </section>
+
+      <!-- PESTAÑA 2: LIVE PLAYGROUND & DEMO CRUD -->
+      <section id="tab-playground" class="tab-content">
+        <!-- Filtros de búsqueda -->
+        <div class="filter-bar">
+          <div class="search-box">
+            <span class="material-symbols-outlined">search</span>
+            <input type="text" id="search-input"
+              placeholder="Búsqueda reactiva por receta, técnica culinaria o ingredientes...">
+          </div>
+          <select id="category-filter" class="filter-select">
+            <option value="ALL">Todas las Categorías</option>
+          </select>
+          <select id="sort-filter" class="filter-select">
+            <option value="asc">Ordenar: ID Ascendente</option>
+            <option value="desc">Ordenar: ID Descendente</option>
+          </select>
+        </div>
+
+        <!-- Tarjetas de Métricas -->
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <span class="metric-icon material-symbols-outlined">menu_book</span>
+            <div>
+              <span class="metric-title">RECETAS EN MEMORIA</span>
+              <h3 class="metric-value" id="metric-recipes-count">0</h3>
+            </div>
+          </div>
+          <div class="metric-card">
+            <span class="metric-icon material-symbols-outlined">category</span>
+            <div>
+              <span class="metric-title">CATEGORÍAS VÁLIDAS</span>
+              <h3 class="metric-value" id="metric-categories-count">0</h3>
+            </div>
+          </div>
+          <div class="metric-card">
+            <span class="metric-icon material-symbols-outlined">timer</span>
+            <div>
+              <span class="metric-title">TIEMPO PROMEDIO</span>
+              <h3 class="metric-value" id="metric-avg-time">0 min</h3>
+            </div>
+          </div>
+          <div class="metric-card">
+            <span class="metric-icon material-symbols-outlined">verified</span>
+            <div>
+              <span class="metric-title">PYDANTIC SCHEMAS</span>
+              <h3 class="metric-value text-green">OK (100%)</h3>
+            </div>
+          </div>
+        </div>
+
+        <!-- Layout con Tabla y Consola -->
+        <div class="playground-layout">
+          <!-- Tabla de Recetas -->
+          <section class="table-panel">
+            <div class="panel-header">
+              <h2>Repositorio de Recetas <small id="records-found">0 registros coincidentes</small></h2>
+            </div>
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>IMAGEN</th>
+                    <th>RECETA</th>
+                    <th>CATEGORÍA</th>
+                    <th>COCCIÓN</th>
+                    <th>PRECIO</th>
+                    <th>ACCIONES</th>
+                  </tr>
+                </thead>
+                <tbody id="recipes-table-body">
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- Consola de Telemetría -->
+          <section class="console-panel">
+            <div class="console-header">
+              <div class="console-dots">
+                <span class="dot red"></span>
+                <span class="dot yellow"></span>
+                <span class="dot green"></span>
+                <span class="console-title">FASTAPI ASYNC TELEMETRY CONSOLE</span>
+              </div>
+              <div class="console-actions">
+                <button class="btn-console-action" id="btn-copy-curl">Copy cURL</button>
+                <button class="btn-console-action" id="clear-console">Clear</button>
+              </div>
+            </div>
+            <div class="console-status-bar">
+              <span class="method-badge get" id="console-method">GET /api/v1/recipes</span>
+              <span class="status-code code-200" id="console-status">200 OK</span>
+              <span class="latency" id="console-latency">0.0 ms</span>
+            </div>
+            <pre class="console-body" id="console-output"><code>{ "status": "waiting" }</code></pre>
+          </section>
+        </div>
+      </section>
+    </section>
   </main>
 
+  <!-- MODAL: CREAR / EDITAR RECETA -->
+  <div id="modal-recipe" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-recipe-title">POST /api/v1/recipes — Crear Receta</h3>
+        <button class="modal-close" id="close-recipe-modal">&times;</button>
+      </div>
+      <form id="form-recipe" class="modal-body">
+        <input type="hidden" id="recipe-id">
+        <div class="form-group">
+          <label for="recipe-name">Nombre de la Receta *</label>
+          <input type="text" id="recipe-name" required placeholder="Ej: Risotto de Setas">
+        </div>
+        <div class="form-group">
+          <label for="recipe-image">URL de la Imagen</label>
+          <input type="url" id="recipe-image" placeholder="https://ejemplo.com/imagen.jpg">
+        </div>
+        <div class="form-group">
+          <label for="recipe-description">Descripción</label>
+          <input type="text" id="recipe-description" placeholder="Descripción de la receta">
+        </div>
+        <div class="form-group">
+          <label for="recipe-category">Categoría *</label>
+          <select id="recipe-category" required></select>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="recipe-time">Tiempo Cocción (min)</label>
+            <input type="number" id="recipe-time" min="1" placeholder="25">
+          </div>
+          <div class="form-group">
+            <label for="recipe-price">Precio (€)</label>
+            <input type="number" id="recipe-price" step="0.01" min="0" placeholder="12.50">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="cancel-recipe-modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Ejecutar Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: CREAR CATEGORÍA -->
+  <div id="modal-category" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>POST /api/v1/categories — Crear Categoría</h3>
+        <button class="modal-close" id="close-category-modal">&times;</button>
+      </div>
+      <form id="form-category" class="modal-body">
+        <div class="form-group">
+          <label for="category-name">Nombre de la Categoría *</label>
+          <input type="text" id="category-name" required placeholder="Ej: Postres, Pasta, Entrantes">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="cancel-category-modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Ejecutar POST</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <div class="footer-brand">
+        <h3>ChefAPI</h3>
+        <span>RESTful Cooking Infrastructure</span>
+      </div>
+      <div class="footer-links">
+        <span>GET /api/v1/recipes</span>
+        <span>POST /api/v1/recipes</span>
+        <span>GET /api/v1/categories</span>
+      </div>
+      <div class="footer-copy">
+        <span>
+          © 2024 ChefAPI Engine. High-performance culinary microservices.
+        </span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- LIBRERÍAS Y SCRIPTS DE LA APLICACIÓN -->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
   <script src="src/js/api.js"></script>
-  <script src="src/js/main.js"></script>
+  <script src="src/js/json.js"></script>
+  <script src="src/js/categories.js"></script>
+  <script src="src/js/recipes.js"></script>
+  <script src="src/js/doc-playground.js"></script>
   <script src="src/js/ui.js"></script>
 </body>
 
