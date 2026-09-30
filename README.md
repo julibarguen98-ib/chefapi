@@ -84,7 +84,7 @@ FastAPI proporciona además documentación automática:
 
 Clona el repositorio:
 
-git clone [https://github.com/tu-usuario/ChefAPI.git](https://github.com/julibarguen98-ib/chefapi.git)
+git clone (https://github.com/julibarguen98-ib/chefapi.git)
 cd ChefAPI
 
 
